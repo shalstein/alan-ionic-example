@@ -1,0 +1,15 @@
+dependencies {
+    compile(name:'alan_sdk', ext:'aar')
+    implementation 'com.jakewharton.timber:timber:4.6.0'
+  }
+
+
+android {
+  compileSdkVersion 27
+}
+
+repositories {
+  flatDir{
+    dirs 'libs'
+  }
+}
