@@ -26,7 +26,6 @@
     "@ionic/angular": "^4.0.0",
     "AlanVoice": "file:myPlugins/AlanVoice",
     "cordova-android": "7.1.4",
-    "cordova-plugin-alan": "./myPlugins/AlanVoice",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.1.3",
     "cordova-plugin-ionic-webview": "^2.3.2",
@@ -66,7 +65,6 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
-      "cordova-plugin-alan": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
@@ -74,7 +72,8 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "cordova-plugin-alan": {}
     },
     "platforms": [
       "android"

@@ -1,6 +1,8 @@
 dependencies {
     compile(name:'alan_sdk', ext:'aar')
     implementation 'com.jakewharton.timber:timber:4.6.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
   }
 
 
