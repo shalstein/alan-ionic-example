@@ -22,7 +22,7 @@ public class AlanVoice extends CordovaPlugin {
 
         Log.d(TAG, "intitalizing AlanVoice plugin");
         Alan alan = Alan.getInstance();
-        alan.init("wss://tutor.alan.app", "f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
+        alan.init("f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
         
         // if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
         //     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), PERMISSION_REQUEST_CODE);
