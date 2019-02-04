@@ -38,7 +38,7 @@ public class AlanVoice extends CordovaPlugin {
             Log.d(TAG, "this is awesome");
         }
         else if(action.equals("start")) {
-            
+            alanButtonState.start();
         }
         Log.d(TAG, "did not trigger any mehtrods");
         return true;
@@ -53,7 +53,7 @@ public class IonicAlanButtonState {
     private Alan sdk;
 
 
-    public IonicAlanButtonState {
+    public IonicAlanButtonState() {
         setState(DialogState.IDLE);
     }
 
