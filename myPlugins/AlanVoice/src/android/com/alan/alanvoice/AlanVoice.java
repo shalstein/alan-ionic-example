@@ -14,69 +14,33 @@ import com.alan.alansdk.Alan;
 import com.alan.alansdk.alanbase.DialogState;
 import com.alan.alansdk.button.AlanButton;
 import com.alan.alansdk.BasicSdkListener;
+import android.support.annotation.NonNull;
+
 
 
 public class AlanVoice extends CordovaPlugin {
 
     private static final String TAG = "plugins.AlanVoice";
+    private DialogState alanState;
+    private Alan sdk;
+    private AlanStateListener stateListener = new AlanStateListener();
+
 
     public void initialize(CordovaInterface cordova, CordovaWebView webView){
         super.initialize(cordova, webView);
-         AlanButton alanButtonState = new IonicAlanButtonState();
 
         Log.d(TAG, "intitalizing AlanVoice plugin");
-        Alan alan = Alan.getInstance();
-        alan.init("f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
-        alanButtonState.withConfig(alan);
+        this.sdk = Alan.getInstance();
+        this.sdk.init("f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
+        this.alanState = DialogState.IDLE;
+        this.sdk.registerCallback(this.stateListener);
+
+
+
         // if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
         //     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), PERMISSION_REQUEST_CODE);
         // }
 
-    }
-
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        if(action.equals("coolMethod")){
-            Log.d(TAG, "this is awesome");
-        }
-        else if(action.equals("start")) {
-            alanButtonState.start();
-        }
-        Log.d(TAG, "did not trigger any mehtrods");
-        return true;
-    }
-}
-
-
-
-class IonicAlanButtonState {
-
-    private AlanStateListener stateListener = new AlanStateListener();
-    private Alan sdk;
-
-
-    public IonicAlanButtonState() {
-        setState(DialogState.IDLE);
-    }
-
-    public void setState(DialogState dialogState)
-    {
-        this.state = dialogState;
-    }
-
-    public DialogState getState()
-    {
-        return this.state;
-    }
-
-
-    public void withConfig(Alan alan)
-    {
-        this.sdk = alan;
-        this.sdk.registerCallback(this.stateListener);
-    }
-
-    public void performClick() {
-        start();
     }
 
     private void start()
@@ -84,7 +48,7 @@ class IonicAlanButtonState {
         if (this.sdk == null) {
             return;
         }
-        if (this.state != DialogState.IDLE)
+        if (this.alanState != DialogState.IDLE)
         {
             this.sdk.turnOff();
         }
@@ -96,15 +60,29 @@ class IonicAlanButtonState {
         }
     }
 
-    class AlanStateListener
-            extends BasicSdkListener
+
+
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        if(action.equals("coolMethod")){
+            Log.d(TAG, "this is awesome");
+        }
+        else if(action.equals("start")) {
+            this.start();
+        }
+        return true;
+    }
+
+    class AlanStateListener extends BasicSdkListener
     {
         AlanStateListener() {}
 
         public void onDialogStateChanged(@NonNull DialogState dialogState)
         {
-            AlanButton.this.setState(dialogState);
+            AlanVoice.this.alanState = dialogState;
         }
     }
-
 }
+
+
+
+
