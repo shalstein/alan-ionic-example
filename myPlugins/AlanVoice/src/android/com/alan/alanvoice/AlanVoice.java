@@ -13,6 +13,7 @@ import android.util.Log;
 import com.alan.alansdk.Alan;
 import com.alan.alansdk.alanbase.DialogState;
 import com.alan.alansdk.button.AlanButton;
+import com.alan.alansdk.BasicSdkListener;
 
 
 public class AlanVoice extends CordovaPlugin {
@@ -47,7 +48,7 @@ public class AlanVoice extends CordovaPlugin {
 
 
 
-public class IonicAlanButtonState {
+class IonicAlanButtonState {
 
     private AlanStateListener stateListener = new AlanStateListener();
     private Alan sdk;
@@ -75,7 +76,7 @@ public class IonicAlanButtonState {
     }
 
     public void performClick() {
-        start()
+        start();
     }
 
     private void start()
