@@ -13,6 +13,7 @@ import android.util.Log;
 import com.alan.alansdk.Alan;
 import com.alan.alansdk.alanbase.DialogState;
 import com.alan.alansdk.button.AlanButton;
+import com.sun.deploy.jcp.dialog.Dialog;
 import com.alan.alansdk.BasicSdkListener;
 import android.support.annotation.NonNull;
 
@@ -60,6 +61,11 @@ public class AlanVoice extends CordovaPlugin {
         }
     }
 
+    private DialogState getState()
+    {
+      return this.alanState;
+    }
+
 
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
@@ -68,6 +74,10 @@ public class AlanVoice extends CordovaPlugin {
         }
         else if(action.equals("start")) {
             this.start();
+        }
+        else if(action.equals("getState")) {
+            PluginResult stateResult = new PluginResult(PluginResult.Status.OK, (this.getState()).toString());
+            callbackContext.sendPluginResult(stateResult);
         }
         return true;
     }
