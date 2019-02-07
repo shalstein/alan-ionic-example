@@ -13,7 +13,6 @@ import android.util.Log;
 import com.alan.alansdk.Alan;
 import com.alan.alansdk.alanbase.DialogState;
 import com.alan.alansdk.button.AlanButton;
-import com.sun.deploy.jcp.dialog.Dialog;
 import com.alan.alansdk.BasicSdkListener;
 import android.support.annotation.NonNull;
 
