@@ -78,6 +78,13 @@ public class AlanVoice extends CordovaPlugin {
             PluginResult stateResult = new PluginResult(PluginResult.Status.OK, (this.getState()).toString());
             callbackContext.sendPluginResult(stateResult);
         }
+        else if(action.equals("greet")) {
+
+            String name = data.getString(0);
+            String message = "Hello, " + name;
+            callbackContext.success(message);
+
+        }
         return true;
     }
 
