@@ -24,7 +24,7 @@ public class AlanVoice extends CordovaPlugin {
     private DialogState alanState;
     private Alan sdk;
     private AlanStateListener stateListener = new AlanStateListener();
-
+    private CallbackContext callbackContext = null;
 
     public void initialize(CordovaInterface cordova, CordovaWebView webView){
         super.initialize(cordova, webView);
