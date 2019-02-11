@@ -80,7 +80,7 @@ public class AlanVoice extends CordovaPlugin {
         }
         else if(action.equals("greet")) {
 
-            String name = data.getString(0);
+            String name = args.getString(0);
             String message = "Hello, " + name;
             callbackContext.success(message);
 

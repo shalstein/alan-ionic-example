@@ -9,8 +9,9 @@ declare var cordova: any;
 export class Tab2Page {
 
   handleButtonClick = () => {
-    // (<any>window).cordova.plugins.AlanVoice.greet('hiii', () => console.log('sucess'), () => console.log('fail'));
-    cordova.plugins.AlanVoice.greet('hiii', () => console.log('sucess'), () => console.log('fail'));
+    // (<any>window).cordova.plugins.AlanVoice.greet('hiii', (r) => console.log('sucessxxxx' + r), (r) => console.log('fail ddfs' + r));
+    console.log('in the callback');
+    cordova.plugins.AlanVoice.greet('h', (response) => console.log('sucess' + response), (error) => console.log('myError' + error));
 
   }
 }
