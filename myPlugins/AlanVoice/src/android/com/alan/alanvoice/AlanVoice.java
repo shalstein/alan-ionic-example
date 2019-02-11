@@ -16,6 +16,11 @@ import com.alan.alansdk.button.AlanButton;
 import com.alan.alansdk.BasicSdkListener;
 import android.support.annotation.NonNull;
 
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.Manifest;
+import android.content.pm.PackageManager;
+
 
 
 public class AlanVoice extends CordovaPlugin {
@@ -25,6 +30,9 @@ public class AlanVoice extends CordovaPlugin {
     private Alan sdk;
     private AlanStateListener stateListener = null;
     private CallbackContext callbackContext = null;
+
+    private static final int PERMISSION_REQUEST_CODE = 101;
+
 
     public void initialize(CordovaInterface cordova, CordovaWebView webView){
         super.initialize(cordova, webView);
@@ -48,16 +56,22 @@ public class AlanVoice extends CordovaPlugin {
             return;
         }
 
-
-        if (this.alanState != DialogState.IDLE)
-        {
-            this.sdk.turnOff();
-        }
-        else
-        {
-            this.sdk.turnOn();
-            this.sdk.record();
-            this.sdk.speak();
+        if (ContextCompat.checkSelfPermission(AlanVoice.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(AlanVoice.this,
+                    new String[] {Manifest.permission.RECORD_AUDIO},
+                    PERMISSION_REQUEST_CODE);
+        } else {
+        
+            if (this.alanState != DialogState.IDLE)
+            {
+                this.sdk.turnOff();
+            }
+            else
+            {
+                this.sdk.turnOn();
+                this.sdk.record();
+                this.sdk.speak();
+            }
         }
     }
 
