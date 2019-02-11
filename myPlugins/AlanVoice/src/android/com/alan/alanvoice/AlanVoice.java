@@ -23,7 +23,7 @@ public class AlanVoice extends CordovaPlugin {
     private static final String TAG = "plugins.AlanVoice";
     private DialogState alanState;
     private Alan sdk;
-    private AlanStateListener stateListener = new AlanStateListener();
+    private AlanStateListener stateListener = null;
     private CallbackContext callbackContext = null;
 
     public void initialize(CordovaInterface cordova, CordovaWebView webView){
@@ -33,7 +33,6 @@ public class AlanVoice extends CordovaPlugin {
         this.sdk = Alan.getInstance();
         this.sdk.init("f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
         this.alanState = DialogState.IDLE;
-        this.sdk.registerCallback(this.stateListener);
 
 
 
@@ -48,6 +47,8 @@ public class AlanVoice extends CordovaPlugin {
         if (this.sdk == null) {
             return;
         }
+
+
         if (this.alanState != DialogState.IDLE)
         {
             this.sdk.turnOff();
@@ -72,6 +73,16 @@ public class AlanVoice extends CordovaPlugin {
             Log.d(TAG, "this is awesome");
         }
         else if(action.equals("start")) {
+
+
+            if(this.callbackContext == null){
+                this.callbackContext = callbackContext;
+                PluginResult dialogState = new PluginResult(PluginResult.Status.NO_RESULT);
+                dialogState.setKeepCallback(true);
+                this.callbackContext.sendPluginResult(dialogState);
+                this.stateListener = new AlanStateListener();
+                this.sdk.registerCallback(this.stateListener);
+            }
             this.start();
         }
         else if(action.equals("getState")) {
@@ -95,6 +106,9 @@ public class AlanVoice extends CordovaPlugin {
         public void onDialogStateChanged(@NonNull DialogState dialogState)
         {
             AlanVoice.this.alanState = dialogState;
+            PluginResult state = new PluginResult(PluginResult.Status.OK, dialogState.name());
+            state.setKeepCallback(true);
+            AlanVoice.this.callbackContext.sendPluginResult(state);
         }
     }
 }
