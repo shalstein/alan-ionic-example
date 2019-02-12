@@ -16,10 +16,9 @@ import com.alan.alansdk.button.AlanButton;
 import com.alan.alansdk.BasicSdkListener;
 import android.support.annotation.NonNull;
 
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import org.apache.cordova.PermissionHelper;
 import android.Manifest;
-import android.content.pm.PackageManager;
+
 
 
 
@@ -31,7 +30,9 @@ public class AlanVoice extends CordovaPlugin {
     private AlanStateListener stateListener = null;
     private CallbackContext callbackContext = null;
 
-    private static final int PERMISSION_REQUEST_CODE = 101;
+    public static String[]  permissions = { Manifest.permission.RECORD_AUDIO };
+    public static int RECORD_AUDIO = 0;
+
 
 
     public void initialize(CordovaInterface cordova, CordovaWebView webView){
@@ -41,13 +42,6 @@ public class AlanVoice extends CordovaPlugin {
         this.sdk = Alan.getInstance();
         this.sdk.init("f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
         this.alanState = DialogState.IDLE;
-
-
-
-        // if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-        //     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), PERMISSION_REQUEST_CODE);
-        // }
-
     }
 
     private void start()
@@ -56,10 +50,8 @@ public class AlanVoice extends CordovaPlugin {
             return;
         }
 
-        if (ContextCompat.checkSelfPermission(AlanVoice.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(AlanVoice.this,
-                    new String[] {Manifest.permission.RECORD_AUDIO},
-                    PERMISSION_REQUEST_CODE);
+        if (!PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
+            getMicPermission(RECORD_AUDIO);
         } else {
         
             if (this.alanState != DialogState.IDLE)
@@ -78,6 +70,10 @@ public class AlanVoice extends CordovaPlugin {
     private DialogState getState()
     {
       return this.alanState;
+    }
+
+    protected void getMicPermission(int requestCode) {
+        PermissionHelper.requestPermission(this, requestCode, permissions[RECORD_AUDIO]);
     }
 
 
