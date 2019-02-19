@@ -56,26 +56,18 @@ public class AlanVoice extends CordovaPlugin {
 
     private void start()
     {
-        if (this.sdk == null) {
+        if (this.sdk == null || !this.sdk.isInited()) {
+            Log.i("AlanPlugin", "Alan sdk is null or not initalized!")
             return;
         }
 
         if (!PermissionHelper.hasPermission(this, permissions[RECORD_AUDIO])) {
             getMicPermission(RECORD_AUDIO);
         } else {
-        
-            if (this.alanState != DialogState.IDLE)
-            {
-                this.sdk.turnOff();
-            }
-            else
-            {
-                this.sdk.turnOn();
-                this.sdk.record();
-                this.sdk.speak();
+               sdk.toggle();
             }
         }
-    }
+
 
     private DialogState getState()
     {
