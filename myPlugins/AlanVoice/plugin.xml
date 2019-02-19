@@ -35,7 +35,7 @@
       
       <source-file src="src/android/com/alan/alanvoice/AlanVoice.java" target-dir="src/com/alan/alanvoice/" />
       <framework src="src/android/com/alan/sdk/alan_sdk.gradle" custom="true" type="gradleReference" />
-      <lib-file src="src/android/com/alan/sdk/alan_sdk.aar" />
+      <lib-file src="src/android/com/alan/sdk/alanSDK_release_1.1.aar" />
 
 
 

@@ -27,7 +27,7 @@ public class AlanVoice extends CordovaPlugin {
     private static final String TAG = "plugins.AlanVoice";
     private DialogState alanState;
     private Alan sdk;
-    private AlanStateListener stateListener = null;
+    private AlanDialogStateListener stateListener = null;
     private CallbackContext callbackContext = null;
 
     public static String[]  permissions = { Manifest.permission.RECORD_AUDIO };
@@ -39,9 +39,19 @@ public class AlanVoice extends CordovaPlugin {
         super.initialize(cordova, webView);
 
         Log.d(TAG, "intitalizing AlanVoice plugin");
+        Alan.enableLogging(true);
         this.sdk = Alan.getInstance();
         this.sdk.init("f18a4135b0857d6ee7fe2f0078af3aeb2e956eca572e1d8b807a3e2338fdd0dc/stage");
+        this.sdk.registerCallback(new AlanOnConectStateCallback());
         this.alanState = DialogState.IDLE;
+    }
+
+     class AlanOnConectStateCallback extends BasicSdkListener {
+        @Override
+        public void onConnectStateChanged(@NonNull ConnectionState connectState) {
+            super.onConnectStateChanged(connectState);
+            Log.i("AlanCallback", "Connection state changed -> " + connectState.name());
+        }
     }
 
     private void start()
@@ -90,7 +100,7 @@ public class AlanVoice extends CordovaPlugin {
                 PluginResult dialogState = new PluginResult(PluginResult.Status.NO_RESULT);
                 dialogState.setKeepCallback(true);
                 this.callbackContext.sendPluginResult(dialogState);
-                this.stateListener = new AlanStateListener();
+                this.stateListener = new AlanDialogStateListener();
                 this.sdk.registerCallback(this.stateListener);
             }
             this.start();
@@ -109,9 +119,9 @@ public class AlanVoice extends CordovaPlugin {
         return true;
     }
 
-    class AlanStateListener extends BasicSdkListener
+    class AlanDialogStateListener extends BasicSdkListener
     {
-        AlanStateListener() {}
+        AlanDialogStateListener() {}
 
         public void onDialogStateChanged(@NonNull DialogState dialogState)
         {
