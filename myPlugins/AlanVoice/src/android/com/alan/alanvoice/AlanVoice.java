@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.alan.alansdk.Alan;
 import com.alan.alansdk.alanbase.DialogState;
+import com.alan.alansdk.alanbase.ConnectionState;
 import com.alan.alansdk.button.AlanButton;
 import com.alan.alansdk.BasicSdkListener;
 import android.support.annotation.NonNull;
@@ -54,10 +55,10 @@ public class AlanVoice extends CordovaPlugin {
         }
     }
 
-    private void start()
+    private void toggle()
     {
         if (this.sdk == null || !this.sdk.isInited()) {
-            Log.i("AlanPlugin", "Alan sdk is null or not initalized!")
+            Log.i("AlanPlugin", "Alan sdk is null or not initalized!");
             return;
         }
 
@@ -84,7 +85,7 @@ public class AlanVoice extends CordovaPlugin {
         if(action.equals("coolMethod")){
             Log.d(TAG, "this is awesome");
         }
-        else if(action.equals("start")) {
+        else if(action.equals("toggle")) {
 
 
             if(this.callbackContext == null){
@@ -95,7 +96,7 @@ public class AlanVoice extends CordovaPlugin {
                 this.stateListener = new AlanDialogStateListener();
                 this.sdk.registerCallback(this.stateListener);
             }
-            this.start();
+            this.toggle();
         }
         else if(action.equals("getState")) {
             PluginResult stateResult = new PluginResult(PluginResult.Status.OK, (this.getState()).toString());

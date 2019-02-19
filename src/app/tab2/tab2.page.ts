@@ -9,10 +9,49 @@ declare var AlanVoice: any;
 export class Tab2Page {
 
   handleButtonClick = () => {
-    // (<any>window).cordova.plugins.AlanVoice.greet('hiii', (r) => console.log('sucessxxxx' + r), (r) => console.log('fail ddfs' + r));
-    console.log('in the callback');
-    AlanVoice.greet('h', (response) => console.log('sucess' + response), (error) => console.log('myError' + error));
-    AlanVoice.start((response) => console.log('sucess' + response), (error) => console.log('myError' + error));
-
+    AlanVoice.toggle((dialogState) => {
+    console.log(dialogState);
+    switch (dialogState) {
+      case 'IDLE':
+        this.handleIdleState();
+        break;
+      case 'LISTEN':
+        this.handleListenState();
+        break;
+      case 'PROCESS':
+        this.handleProcessState();
+      break;
+      case 'REPLY':
+        this.handleReplyState();
+      break;
+    }
+    }, (error) => console.error('myError' + error));
   }
-}
+
+  handleReplyState = () => {
+    let a = 1 + 3;
+    }
+    handleProcessState = () => {
+      let a = 1 + 3;
+     }
+     handleListenState = () => {
+      let a = 1 + 3;
+     }
+     handleIdleState = () => {
+      let a = 1 + 3;
+     }
+  }
+
+
+
+// case IDLE: 
+//       setIdleState();
+//       break;
+//     case LISTEN: 
+//       setListenState();
+//       break;
+//     case PROCESS: 
+//       setUnderstoodState();
+//       break;
+//     case REPLY: 
+//       setSpeakBackState();
