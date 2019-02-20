@@ -7,5 +7,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-button  (click)="handleButtonClick()">Chai</ion-button>
+  <ion-button color="{{dialogState | alanButtonColor}}" (click)="handleButtonClick()">Alan state is {{dialogState}}</ion-button>
+
+  <ion-button [color]="currentButtonColorx" (click)="handleButtonClickx()">Alan state is {{dialogStatex}}</ion-button>
 </ion-content>
