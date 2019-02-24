@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Platform } from '@ionic/angular';
 declare var AlanVoice: any;
 
 @Component({
@@ -6,79 +7,88 @@ declare var AlanVoice: any;
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
 })
-export class Tab2Page {
+export class Tab2Page implements OnInit {
 
-  constructor(public changeDetectorRef: ChangeDetectorRef){
-
-  }
+  constructor(public changeDetectorRef: ChangeDetectorRef, public platform: Platform) { }
 
   dialogState = 'IDLE';
   currentButtonColor = 'light';
+  alanText = '';
+  events = 'my event not set';
 
-  dialogStatex = 'IDLE';
-  currentButtonColorx = 'light';
 
-  handleButtonClick = () => {
-    AlanVoice.toggle((state) => {
-    console.log(state);
-    this.dialogState = state;
-    this.changeDetectorRef.detectChanges();
-    // switch (state) {
-    //   case 'IDLE':
-    //     this.handleIdleState();
-    //     break;
-    //   case 'LISTEN':
-    //     this.handleListenState();
-    //     break;
-    //   case 'PROCESS':
-    //     this.handleProcessState();
-    //   break;
-    //   case 'REPLY':
-    //     this.handleReplyState();
-    //   break;
-    // }
-    }, (error) => console.error('myError' + error)
-    );
+
+
+  ngOnInit() {
+    console.log('loaded');
+    this.platform.ready().then(() => {
+
+
+      console.log('loaded ready platform ion');
+      const logError = error => console.log(error)
+      AlanVoice.subscribeToTextEvent((text: string) => {
+        console.log(text);
+        console.log('event text fires');
+        this.alanText = text;
+        this.changeDetectorRef.detectChanges();
+      }, logError);
+      AlanVoice.subscribeToEvents((event: string) => {
+        this.events = event;
+        console.log(event);
+        this.changeDetectorRef.detectChanges();
+      }, logError);
+      AlanVoice.subscribeToDialogState((state: string) => {
+        console.log('in dialogstate callback js')
+        this.dialogState = state;
+        this.changeDetectorRef.detectChanges();
+      }, logError);
+
+    });
+
+
   }
 
-  handleButtonClickx = () => {
-    this.currentButtonColorx = this.currentButtonColorx === 'danger' ? 'primary' : 'danger';
-    this.dialogStatex = 'talking';
+  ionViewWillUnload = () => {
+
+  }
+
+  handleButtonClick = () => {
+    console.log('clikced button')
+    AlanVoice.toggle((state) => {
+    console.log('toggle callback');
+
+
+    }, (error) => console.error('myError' + error)
+    );
+
+
+
   }
 
   handleReplyState = () => {
     this.dialogState = 'REPLY';
-    console.log('reply');
     this.setButtonColor('REPLY');
-    console.log(this.currentButtonColor);
 
     }
     handleProcessState = () => {
-      console.log(this.currentButtonColor);
       this.dialogState = 'PROCESS';
-      console.log('pr');
       this.setButtonColor('PROCESS');
 
      }
      handleListenState = () => {
-      console.log(this.currentButtonColor);
 
       this.dialogState = 'LISTEN';
-      console.log('lis');
       this.setButtonColor('LISTEN');
 
      }
      handleIdleState = () => {
-      console.log(this.currentButtonColor);
       this.dialogState = 'IDLE';
-      console.log('idle');
       this.setButtonColor('IDLE');
 
      }
 
      getButtonColor = (state) => {
         const colors = new Map([['IDLE', 'light'], ['LISTEN', 'secondary'], ['PROCESS', 'danger'], ['REPLY', 'success']]);
-        console.log(colors.get(state));
 
 
         return colors.get(state);

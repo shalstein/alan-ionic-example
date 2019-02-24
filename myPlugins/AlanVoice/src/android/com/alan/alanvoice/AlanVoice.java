@@ -13,6 +13,7 @@ import android.util.Log;
 import com.alan.alansdk.Alan;
 import com.alan.alansdk.alanbase.DialogState;
 import com.alan.alansdk.alanbase.ConnectionState;
+import com.alan.alansdk.events.EventText;
 import com.alan.alansdk.button.AlanButton;
 import com.alan.alansdk.BasicSdkListener;
 import android.support.annotation.NonNull;
@@ -28,8 +29,10 @@ public class AlanVoice extends CordovaPlugin {
     private static final String TAG = "plugins.AlanVoice";
     private DialogState alanState;
     private Alan sdk;
-    private AlanDialogStateListener stateListener = null;
-    private CallbackContext callbackContext = null;
+    private CallbackContext textCallbackContext = null;
+    private CallbackContext eventCallbackContext = null;
+    private CallbackContext dialogStateCallbackContext = null;
+
 
     public static String[]  permissions = { Manifest.permission.RECORD_AUDIO };
     public static int RECORD_AUDIO = 0;
@@ -47,13 +50,6 @@ public class AlanVoice extends CordovaPlugin {
         this.alanState = DialogState.IDLE;
     }
 
-     class AlanOnConectStateCallback extends BasicSdkListener {
-        @Override
-        public void onConnectStateChanged(@NonNull ConnectionState connectState) {
-            super.onConnectStateChanged(connectState);
-            Log.i("AlanCallback", "Connection state changed -> " + connectState.name());
-        }
-    }
 
     private void toggle()
     {
@@ -81,35 +77,86 @@ public class AlanVoice extends CordovaPlugin {
 
 
 
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        if(action.equals("coolMethod")){
-            Log.d(TAG, "this is awesome");
-        }
-        else if(action.equals("toggle")) {
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {        if(action.equals("toggle")) {
 
-
-            if(this.callbackContext == null){
-                this.callbackContext = callbackContext;
-                PluginResult dialogState = new PluginResult(PluginResult.Status.NO_RESULT);
-                dialogState.setKeepCallback(true);
-                this.callbackContext.sendPluginResult(dialogState);
-                this.stateListener = new AlanDialogStateListener();
-                this.sdk.registerCallback(this.stateListener);
-            }
             this.toggle();
-        }
+        }        
         else if(action.equals("getState")) {
             PluginResult stateResult = new PluginResult(PluginResult.Status.OK, (this.getState()).toString());
             callbackContext.sendPluginResult(stateResult);
         }
         else if(action.equals("greet")) {
-
             String name = args.getString(0);
             String message = "Hello, " + name;
             callbackContext.success(message);
+        }
+        else if(action.equals("subscribeToTextEvent")){
+            if(this.textCallbackContext == null){
+            this.textCallbackContext = callbackContext;
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            this.textCallbackContext.sendPluginResult(result);
+        }
+            this.sdk.registerCallback(new AlanTextEventListener());
+        }
+        else if(action.equals("subscribeToEvents")){
+            if(this.eventCallbackContext == null){
+            this.eventCallbackContext = callbackContext;
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            this.eventCallbackContext.sendPluginResult(result);
+        }
+            this.sdk.registerCallback(new AlanEventListener());
+        }
+        else if(action.equals("subscribeToDialogState")){
+                if(dialogStateCallbackContext == null){
+            this.dialogStateCallbackContext = callbackContext;
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            this.dialogStateCallbackContext.sendPluginResult(result);
+        }
+            this.sdk.registerCallback(new AlanDialogStateListener());
+        }        
+        return true;
+    }
+
+
+    class AlanTextEventListener extends BasicSdkListener
+    {   
+        @Override
+        public void onTextEvent(@NonNull EventText eventText) {
+            PluginResult text = new PluginResult(PluginResult.Status.OK, eventText.getText());
+            text.setKeepCallback(true);
+            AlanVoice.this.textCallbackContext.sendPluginResult(text);
+            Log.i("AlanCallback", "my eventText callback " + eventText.getText());
 
         }
-        return true;
+    }
+
+    class AlanEventListener extends BasicSdkListener 
+    {
+        @Override
+        public void onEvent(@NonNull String event, String payload){
+            super.onEvent(event, payload);
+            Log.i("Alan", "my Event callback " + event + " " + payload);
+            PluginResult eventResult = new PluginResult(PluginResult.Status.OK, event + "-" + payload );
+            eventResult.setKeepCallback(true);
+            AlanVoice.this.eventCallbackContext.sendPluginResult(eventResult);
+
+            if(event.equals("command")){
+                Log.i("Alan", "commands rock" + event + " " + payload);
+
+            }
+
+        }
+    }
+
+    class AlanOnConectStateCallback extends BasicSdkListener {
+        @Override
+        public void onConnectStateChanged(@NonNull ConnectionState connectState) {
+            super.onConnectStateChanged(connectState);
+            Log.i("AlanCallback", "Connection state changed -> " + connectState.name());
+        }
     }
 
     class AlanDialogStateListener extends BasicSdkListener
@@ -121,7 +168,7 @@ public class AlanVoice extends CordovaPlugin {
             AlanVoice.this.alanState = dialogState;
             PluginResult state = new PluginResult(PluginResult.Status.OK, dialogState.name());
             state.setKeepCallback(true);
-            AlanVoice.this.callbackContext.sendPluginResult(state);
+            AlanVoice.this.dialogStateCallbackContext.sendPluginResult(state);
         }
     }
 }
