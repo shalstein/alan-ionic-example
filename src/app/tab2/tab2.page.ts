@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { NgZone, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { Platform } from '@ionic/angular';
 import {Router} from '@angular/router';
 declare var AlanVoice: any;
@@ -10,7 +10,7 @@ declare var AlanVoice: any;
 })
 export class Tab2Page implements OnInit {
 
-  constructor(public changeDetectorRef: ChangeDetectorRef, public platform: Platform , public router: Router) { }
+  constructor(public changeDetectorRef: ChangeDetectorRef, public platform: Platform , public router: Router, public ngZone: NgZone) { }
 
   dialogState = 'IDLE';
   currentButtonColor = 'light';
@@ -21,34 +21,34 @@ export class Tab2Page implements OnInit {
 
 
   ngOnInit() {
-    console.log('loaded');
     this.platform.ready().then(() => {
 
-
-      console.log('loaded ready platform ion');
-      const logError = error => console.log(error);
-      AlanVoice.subscribeToTextEvent((text: string) => {
-        console.log(text);
-        console.log('event text fires');
-        this.alanText = text;
-        this.changeDetectorRef.detectChanges();
-      }, logError);
-      AlanVoice.subscribeToCommands((event: any) => {
-        this.events = event;
-        console.log(event);
-        const parsedEvent = JSON.parse(event);
-        console.log('looks over here');
-        console.log(parsedEvent.data.navigateTo);
-
-        this.router.navigate(['tab3']);
-        this.changeDetectorRef.detectChanges();
-      }, logError);
-      AlanVoice.subscribeToDialogState((state: string) => {
-        console.log('in dialogstate callback js');
-        this.dialogState = state;
-        this.changeDetectorRef.detectChanges();
-      }, logError);
-
+      if (this.platform.is('android')) {
+        const logError = error => console.log(error);
+        AlanVoice.subscribeToTextEvent((text: string) => {
+          console.log(text);
+          console.log('event text fires');
+          this.alanText = text;
+          this.changeDetectorRef.detectChanges();
+        }, logError);
+        AlanVoice.subscribeToCommands((event: any) => {
+          this.events = event;
+          console.log(event);
+          const parsedEvent = JSON.parse(event);
+          console.log('looks over here');
+          console.log(parsedEvent.data.navigateTo);
+          const navigateTo = parsedEvent.data.navigateTo;
+          this.ngZone.run(() => {
+            this.router.navigate([navigateTo]);
+          });
+          this.changeDetectorRef.detectChanges();
+        }, logError);
+        AlanVoice.subscribeToDialogState((state: string) => {
+          console.log('in dialogstate callback js');
+          this.dialogState = state;
+          this.changeDetectorRef.detectChanges();
+        }, logError);
+      }
     });
 
 
@@ -56,17 +56,15 @@ export class Tab2Page implements OnInit {
 
 
   handleButtonClick = () => {
-    console.log('clikced button')
-    AlanVoice.toggle((state) => {
-    console.log('toggle callback');
-
-
-    }, (error) => console.error('myError' + error)
-    );
-
-
-
-  }
+    console.log('clikced button');
+    if (this.platform.is('android')) {
+        AlanVoice.toggle(() => {
+        console.log('toggle callback');
+      }, (error) => console.error('myError' + error));
+    } else {
+      this.router.navigate(['/tabs/tab3']);
+    }
+}
 
   handleReplyState = () => {
     this.dialogState = 'REPLY';
