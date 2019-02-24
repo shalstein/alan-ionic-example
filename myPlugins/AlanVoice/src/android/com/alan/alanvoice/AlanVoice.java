@@ -77,19 +77,10 @@ public class AlanVoice extends CordovaPlugin {
 
 
 
-    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {        if(action.equals("toggle")) {
-
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {        
+        if(action.equals("toggle")) {
             this.toggle();
         }        
-        else if(action.equals("getState")) {
-            PluginResult stateResult = new PluginResult(PluginResult.Status.OK, (this.getState()).toString());
-            callbackContext.sendPluginResult(stateResult);
-        }
-        else if(action.equals("greet")) {
-            String name = args.getString(0);
-            String message = "Hello, " + name;
-            callbackContext.success(message);
-        }
         else if(action.equals("subscribeToTextEvent")){
             if(this.textCallbackContext == null){
             this.textCallbackContext = callbackContext;
@@ -99,22 +90,22 @@ public class AlanVoice extends CordovaPlugin {
         }
             this.sdk.registerCallback(new AlanTextEventListener());
         }
-        else if(action.equals("subscribeToEvents")){
+        else if(action.equals("subscribeToCommands")){
             if(this.eventCallbackContext == null){
             this.eventCallbackContext = callbackContext;
             PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
             result.setKeepCallback(true);
             this.eventCallbackContext.sendPluginResult(result);
         }
-            this.sdk.registerCallback(new AlanEventListener());
+            this.sdk.registerCallback(new AlanCommandListener());
         }
         else if(action.equals("subscribeToDialogState")){
-                if(dialogStateCallbackContext == null){
-            this.dialogStateCallbackContext = callbackContext;
-            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-            result.setKeepCallback(true);
-            this.dialogStateCallbackContext.sendPluginResult(result);
-        }
+            if(dialogStateCallbackContext == null){
+                this.dialogStateCallbackContext = callbackContext;
+                PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+                result.setKeepCallback(true);
+                this.dialogStateCallbackContext.sendPluginResult(result);
+            }
             this.sdk.registerCallback(new AlanDialogStateListener());
         }        
         return true;
@@ -133,19 +124,19 @@ public class AlanVoice extends CordovaPlugin {
         }
     }
 
-    class AlanEventListener extends BasicSdkListener 
+    class AlanCommandListener extends BasicSdkListener 
     {
         @Override
         public void onEvent(@NonNull String event, String payload){
-            super.onEvent(event, payload);
+
             Log.i("Alan", "my Event callback " + event + " " + payload);
-            PluginResult eventResult = new PluginResult(PluginResult.Status.OK, event + "-" + payload );
-            eventResult.setKeepCallback(true);
-            AlanVoice.this.eventCallbackContext.sendPluginResult(eventResult);
 
             if(event.equals("command")){
                 Log.i("Alan", "commands rock" + event + " " + payload);
-
+                super.onEvent(event, payload);
+                PluginResult eventResult = new PluginResult(PluginResult.Status.OK, payload );
+                eventResult.setKeepCallback(true);
+                AlanVoice.this.eventCallbackContext.sendPluginResult(eventResult);
             }
 
         }

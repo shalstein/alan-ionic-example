@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { Platform } from '@ionic/angular';
+import {Router} from '@angular/router';
 declare var AlanVoice: any;
 
 @Component({
@@ -9,7 +10,7 @@ declare var AlanVoice: any;
 })
 export class Tab2Page implements OnInit {
 
-  constructor(public changeDetectorRef: ChangeDetectorRef, public platform: Platform) { }
+  constructor(public changeDetectorRef: ChangeDetectorRef, public platform: Platform , public router: Router) { }
 
   dialogState = 'IDLE';
   currentButtonColor = 'light';
@@ -25,20 +26,25 @@ export class Tab2Page implements OnInit {
 
 
       console.log('loaded ready platform ion');
-      const logError = error => console.log(error)
+      const logError = error => console.log(error);
       AlanVoice.subscribeToTextEvent((text: string) => {
         console.log(text);
         console.log('event text fires');
         this.alanText = text;
         this.changeDetectorRef.detectChanges();
       }, logError);
-      AlanVoice.subscribeToEvents((event: string) => {
+      AlanVoice.subscribeToCommands((event: any) => {
         this.events = event;
         console.log(event);
+        const parsedEvent = JSON.parse(event);
+        console.log('looks over here');
+        console.log(parsedEvent.data.navigateTo);
+
+        this.router.navigate(['tab3']);
         this.changeDetectorRef.detectChanges();
       }, logError);
       AlanVoice.subscribeToDialogState((state: string) => {
-        console.log('in dialogstate callback js')
+        console.log('in dialogstate callback js');
         this.dialogState = state;
         this.changeDetectorRef.detectChanges();
       }, logError);
@@ -48,9 +54,6 @@ export class Tab2Page implements OnInit {
 
   }
 
-  ionViewWillUnload = () => {
-
-  }
 
   handleButtonClick = () => {
     console.log('clikced button')
