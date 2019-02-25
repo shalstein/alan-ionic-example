@@ -16,7 +16,12 @@ export class Tab2Page implements OnInit {
   currentButtonColor = 'light';
   alanText = '';
   events = 'my event not set';
-
+  ionViewDidLeave() {
+    console.log('ion vied did leave');
+    if (this.dialogState !== 'IDLE' ) {
+      AlanVoice.toggle();
+    }
+  }
 
 
 
@@ -26,17 +31,12 @@ export class Tab2Page implements OnInit {
       if (this.platform.is('android')) {
         const logError = error => console.log(error);
         AlanVoice.subscribeToTextEvent((text: string) => {
-          console.log(text);
-          console.log('event text fires');
           this.alanText = text;
           this.changeDetectorRef.detectChanges();
         }, logError);
         AlanVoice.subscribeToCommands((event: any) => {
-          this.events = event;
-          console.log(event);
+          this.events += event;
           const parsedEvent = JSON.parse(event);
-          console.log('looks over here');
-          console.log(parsedEvent.data.navigateTo);
           const navigateTo = parsedEvent.data.navigateTo;
           this.ngZone.run(() => {
             this.router.navigate([navigateTo]);
@@ -44,7 +44,6 @@ export class Tab2Page implements OnInit {
           this.changeDetectorRef.detectChanges();
         }, logError);
         AlanVoice.subscribeToDialogState((state: string) => {
-          console.log('in dialogstate callback js');
           this.dialogState = state;
           this.changeDetectorRef.detectChanges();
         }, logError);
@@ -58,9 +57,7 @@ export class Tab2Page implements OnInit {
   handleButtonClick = () => {
     console.log('clikced button');
     if (this.platform.is('android')) {
-        AlanVoice.toggle(() => {
-        console.log('toggle callback');
-      }, (error) => console.error('myError' + error));
+        AlanVoice.toggle();
     } else {
       this.router.navigate(['/tabs/tab3']);
     }
