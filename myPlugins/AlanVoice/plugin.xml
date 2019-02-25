@@ -32,6 +32,20 @@
       <config-file parent="/*" target="AndroidManifest.xml">
           <uses-permission android:name="android.permission.RECORD_AUDIO"/>
       </config-file>
+
+      <edit-config file='app/src/main/AndroidManifest.xml' target='/manifest/application' mode='merge' >
+        <application tools:replace="android:icon" />
+      </edit-config>
+
+      <edit-config file='app/src/main/AndroidManifest.xml' target='/manifest/uses-sdk' mode='merge' >
+          <uses-sdk tools:overrideLibrary="com.alan.alansdk" />
+      </edit-config>
+
+      <edit-config file='app/src/main/AndroidManifest.xml' target='/manifest' mode='merge' >
+          <manifest  xmlns:tools="http://schemas.android.com/tools" />
+      </edit-config>
+
+      
       
       <source-file src="src/android/com/alan/alanvoice/AlanVoice.java" target-dir="src/com/alan/alanvoice/" />
       <framework src="src/android/com/alan/sdk/alan_sdk.gradle" custom="true" type="gradleReference" />

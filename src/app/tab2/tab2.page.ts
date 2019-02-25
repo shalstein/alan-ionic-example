@@ -17,7 +17,6 @@ export class Tab2Page implements OnInit {
   alanText = '';
   events = 'my event not set';
   ionViewDidLeave() {
-    console.log('ion vied did leave');
     if (this.dialogState !== 'IDLE' ) {
       AlanVoice.toggle();
     }
