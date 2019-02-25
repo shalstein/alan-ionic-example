@@ -62,7 +62,7 @@ public class AlanVoice extends CordovaPlugin {
             getMicPermission(RECORD_AUDIO);
         } else {
                sdk.toggle();
-            }
+        }
         }
 
 
@@ -79,7 +79,12 @@ public class AlanVoice extends CordovaPlugin {
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {        
         if(action.equals("toggle")) {
-            this.toggle();
+            cordova.getThreadPool().execute(new Runnable() {
+                public void run(){
+                    AlanVoice.this.toggle();
+                }
+
+            });
         }        
         else if(action.equals("subscribeToTextEvent")){
             if(this.textCallbackContext == null){
