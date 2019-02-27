@@ -16,6 +16,9 @@ import com.alan.alansdk.alanbase.ConnectionState;
 import com.alan.alansdk.events.EventText;
 import com.alan.alansdk.button.AlanButton;
 import com.alan.alansdk.BasicSdkListener;
+import com.alan.alansdk.AlanCallback;
+import com.alan.alansdk.events.EventRecognised;
+
 import android.support.annotation.NonNull;
 
 import org.apache.cordova.PermissionHelper;
@@ -32,6 +35,7 @@ public class AlanVoice extends CordovaPlugin {
     private CallbackContext textCallbackContext = null;
     private CallbackContext eventCallbackContext = null;
     private CallbackContext dialogStateCallbackContext = null;
+    private CallbackContext recognizedEventCallbackContext = null;
 
 
     public static String[]  permissions = { Manifest.permission.RECORD_AUDIO };
@@ -105,14 +109,23 @@ public class AlanVoice extends CordovaPlugin {
             this.sdk.registerCallback(new AlanCommandListener());
         }
         else if(action.equals("subscribeToDialogState")){
-            if(dialogStateCallbackContext == null){
+            if(this.dialogStateCallbackContext == null){
                 this.dialogStateCallbackContext = callbackContext;
                 PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
                 result.setKeepCallback(true);
                 this.dialogStateCallbackContext.sendPluginResult(result);
             }
             this.sdk.registerCallback(new AlanDialogStateListener());
-        }        
+        }
+        else if (action.equals("subscribeToRecognizedEvents")) {
+            if(this.recognizedEventCallbackContext == null) {
+                this.recognizedEventCallbackContext = callbackContext;
+                PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+                result.setKeepCallback(true);
+                this.recognizedEventCallbackContext.sendPluginResult(result);
+            }
+            this.sdk.registerCallback(new AlanRecognizedEventsListener());
+        }       
         return true;
     }
 
@@ -158,7 +171,7 @@ public class AlanVoice extends CordovaPlugin {
     class AlanDialogStateListener extends BasicSdkListener
     {
         AlanDialogStateListener() {}
-
+        @Override
         public void onDialogStateChanged(@NonNull DialogState dialogState)
         {
             AlanVoice.this.alanState = dialogState;
@@ -166,6 +179,19 @@ public class AlanVoice extends CordovaPlugin {
             state.setKeepCallback(true);
             AlanVoice.this.dialogStateCallbackContext.sendPluginResult(state);
         }
+    }
+
+    class AlanRecognizedEventsListener extends BasicSdkListener 
+    {
+        @Override
+        public void onRecognizedEvent(@NonNull EventRecognised eventRecognized)
+        {
+            Log.i("AlanCallback", "my recgnized event callback " + eventRecognized.getText());
+            PluginResult event = new PluginResult(PluginResult.Status.OK, eventRecognized.getText());
+            event.setKeepCallback(true);
+            AlanVoice.this.recognizedEventCallbackContext.sendPluginResult(event);
+        }
+
     }
 }
 

@@ -16,6 +16,7 @@ export class Tab2Page implements OnInit {
   currentButtonColor = 'light';
   alanText = '';
   events = 'my event not set';
+  recognizedEvent = '';
   ionViewDidLeave() {
     if (this.dialogState !== 'IDLE' ) {
       AlanVoice.toggle();
@@ -34,16 +35,21 @@ export class Tab2Page implements OnInit {
           this.changeDetectorRef.detectChanges();
         }, logError);
         AlanVoice.subscribeToCommands((event: any) => {
-          this.events += event;
+          this.events += event + ' n\ ';
           const parsedEvent = JSON.parse(event);
           const navigateTo = parsedEvent.data.navigateTo;
-          this.ngZone.run(() => {
-            this.router.navigate([navigateTo]);
-          });
+          // this.ngZone.run(() => {
+          //   this.router.navigate([navigateTo]);
+          // });
           this.changeDetectorRef.detectChanges();
         }, logError);
         AlanVoice.subscribeToDialogState((state: string) => {
           this.dialogState = state;
+          this.changeDetectorRef.detectChanges();
+        }, logError);
+        AlanVoice.subscribeToRecognizedEvents((recognizedEvent: string) => {
+          this.recognizedEvent = recognizedEvent;
+          console.log('callback recgonized event ' + recognizedEvent);
           this.changeDetectorRef.detectChanges();
         }, logError);
       }
